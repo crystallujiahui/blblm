@@ -1,0 +1,60 @@
+---
+title: "my-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+  To improve the original package, I tried two ways to improve the packages excepting fixing the bug and typo. First, I make it possible to let users to use more than one CPU's for blblm function. Then, I applied blblm function to one more model, which is logistic regression. 
+  
+  To fix typo and bug, I first changed all variables named as "fit" to "obejct" in blblm.R file since both names refer to the same thing and it confuses R when running the code. After that I deleted the default readme file named "hello.rd" since I believe it is causing an unnecessary error.
+  
+  For adding parallelization part, the main change is in the code shown below.
+```{r}
+blblm_par <- function(formula, data, m = 10,B = 5000) {
+  data_list <- split_data(data, m)
+  estimates <- future_map(
+    data_list,
+    ~ lm_each_subsample(formula = formula, data = ., n = nrow(data), B = B))
+  res <- list(estimates = estimates, formula = formula)
+  class(res) <- "blblm"
+  invisible(res)
+}
+```
+
+  I only changed the `map` function in original blblm function into `future_map` function. By this way, users can choose to use parallelization or not. I have also indicated in descprtion file that if users want to use parallelization, they can run the code: 
+  
+`suppressWarnings(plan(multiprocess, workers = 4))`
+
+  Users can change the number of worker to specify number of CPU's they want to use. If users only want to use one CPU to do the work, they will not need to run the `plan()` function. 
+  
+  For second improvement,I choose to apply the blblm function to logstic regression because this is what I am famillar with.Orginially, the function only applied to linear regression models. I created a new file named blbglm.R to make new changes based on code in blblm for application on logstic regression. The logic is similar to the codes in blblm. However,by changing the way to compute the model from `lm` into `glm`, and adding `family=binomial(logit)`, we are able to get a logstic regression model. In function blbglm, choice of parallelizatin is still available to users and the way of using it is same as using parallelization in blblm. The main function for blbglm is shown below.
+  
+```{r}
+blbglm_par <- function(formula, data, m = 10,B = 5000) {
+  data_list <- split_data(data, m)
+  estimates <- future_map(
+    data_list,
+    ~ glm_each_subsample(formula = formula, data = ., n = nrow(data), B = B))
+  res <- list(estimates = estimates, formula = formula)
+  class(res) <- "blbglm"
+  invisible(res)
+}
+```
+
+  Since sigma is not defined in logstic regression, I deleted codes for computing sigma.
+  
+  After making some changes for code in blblm, I create blbglm file for logstic regression. While testing out new functions, I discover that there are two warnings caused by the way we subsampling or bootstrapping, which are totally random since bootstrap samples are randomly created. Since those warnings could not be totally fixed based on my knowledge, I therefore suppress the warnings and continue with my testing process.
+  
+  Besides changes mentioned above, I also add some exmaples,descrptions and documentations in files made. Overll, I believe I have made a great improvement of the orignial blblm package.
+  
+
