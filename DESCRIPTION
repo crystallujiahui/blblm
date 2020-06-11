@@ -8,7 +8,7 @@ Description: This package help users to compute linear/logstic regression models
     using Little Bag of Bootstraps technique. Users also have the option to use parallization
     while computing the fitted model. To use multiple CPU's, users will need to run 
     `suppressWarnings(plan(multiprocess, workers = 4))` and change number of workers to specify
-    number of CPU's want to use.
+    number of CPU's want to use.  
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
