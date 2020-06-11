@@ -53,7 +53,7 @@ blbglm_par <- function(formula, data, m = 10,B = 5000) {
 
   Since sigma is not defined in logstic regression, I deleted codes for computing sigma.
   
-  After making some changes for code in blblm, I create blbglm file for logstic regression. While testing out new functions, I discover that there are two warnings caused by the way we subsampling or bootstrapping, which are totally random since bootstrap samples are randomly created. Since those warnings could not be totally fixed based on my knowledge, I therefore suppress the warnings and continue with my testing process.
+  After making some changes for code in blblm, I create blbglm.R file for logstic regression. While testing out new functions, I discover that there are two warnings caused by the way we subsampling or bootstrapping, which are totally random since bootstrap samples are randomly created. Since those warnings could not be totally fixed based on my knowledge, I therefore suppress the warnings and continue with my testing process.
   
   Besides changes mentioned above, I also add some exmaples,descrptions and documentations in files made. Overll, I believe I have made a great improvement of the orignial blblm package.
   
